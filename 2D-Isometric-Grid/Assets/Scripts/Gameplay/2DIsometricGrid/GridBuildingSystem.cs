@@ -9,6 +9,7 @@ using UnityEngine.EventSystems;
 using core.constants;
 using CodeMonkey.Utils;
 using core.gameplay.buildingsystem.placeobjects;
+using core.gameplay.buildingsystem;
 
 namespace core.gameplay.isometricgrid2d
 {
@@ -26,11 +27,16 @@ namespace core.gameplay.isometricgrid2d
         [Tooltip("All placeable objects scriptable objects")]
         [SerializeField] private List<PlaceableObjectSO> placeableObjectSOList;
 
+        [Header("Ghost")]
+        [Tooltip("BuildingGhost2D script reference")]
+        [SerializeField ]private BuildingGhost2D ghost2D;
+
+
 
         public static Dictionary<TileType, TileBase> tileBases = new Dictionary<TileType, TileBase>();
 
         private PlaceableObjectSO placeableObjectSO;
-        private PlacedObject placedObject;
+       // private PlacedObject placedObject;
         private Vector3 prevPos;
         private BoundsInt prevArea;
         private BoundsInt buildingArea;
@@ -45,7 +51,6 @@ namespace core.gameplay.isometricgrid2d
         protected override void Awake()
         {
             base.Awake();
-            placeableObjectSO = placeableObjectSOList[0];
         }
 
         private void Start()
@@ -64,27 +69,6 @@ namespace core.gameplay.isometricgrid2d
                 return;
             }
 
-            /*if (Input.GetMouseButton(0))
-            {
-                if (EventSystem.current.IsPointerOverGameObject(0))
-                {
-                    return;
-                }
-
-
-                Vector2 touchPos = cam.ScreenToWorldPoint(Input.mousePosition);
-                Vector3Int cellPos = GridLayout.LocalToCell(touchPos);
-
-                if (prevPos != cellPos)
-                {
-                    placedObject.transform.position = GridLayout.CellToLocalInterpolated(cellPos + new Vector3(0.5f, 0.5f, 0f));
-                    prevPos = cellPos;
-                    FollowBuilding();
-                }
-
-
-            }*/
-
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 BuildPlaceableObject();
@@ -92,9 +76,11 @@ namespace core.gameplay.isometricgrid2d
             else if (Input.GetKeyDown(KeyCode.Escape))
             {
                 ClearArea();
-                Destroy(placedObject.gameObject);
+                ghost2D.gameObject.SetActive(false);
+                placeableObjectSO = null;
             }
         }
+
         #endregion
 
         #region Tilemap Management
@@ -136,7 +122,9 @@ namespace core.gameplay.isometricgrid2d
 
         public void InitWithBuilding(GameObject building)
         {
-            OnSelectedChanged?.Invoke();
+            placeableObjectSO = placeableObjectSOList[0];
+            ghost2D.gameObject.SetActive(true);
+            //OnSelectedChanged?.Invoke();
             /*Vector2 screenMidPos = new Vector2(Screen.width / 2, Screen.height / 2);
             Vector2 ghostInitPos = cam.ScreenToWorldPoint(screenMidPos);
             placedObject = Instantiate(building, ghostInitPos, Quaternion.identity).GetComponent<PlacedObject>();
@@ -180,41 +168,14 @@ namespace core.gameplay.isometricgrid2d
             prevArea = buildingArea;
         }
 
-        public void UpdateTempTilesForGhost()
-        {
-            ClearArea();
-            placedObject.Area.position = GridLayout.WorldToCell(placedObject.gameObject.transform.position);
-            buildingArea = placedObject.Area;
-            TileBase[] baseArray = GetTileBlock(buildingArea, mainTilemap);
-
-            int size = baseArray.Length;
-
-            TileBase[] tileArray = new TileBase[size];
-
-            for (int i = 0; i < baseArray.Length; i++)
-            {
-                if (baseArray[i] == tileBases[TileType.White])
-                {
-                    tileArray[i] = tileBases[TileType.Green];
-                }
-                else
-                {
-                    FillTiles(tileArray, TileType.Red);
-                    break;
-                }
-            }
-
-            tempTilemap.SetTilesBlock(buildingArea, tileArray);
-            prevArea = buildingArea;
-        }
-
-
         private void BuildPlaceableObject()
         {
-            /*if(placedObject.CanBePlaced())
-                {
-                    placedObject.CreatePlacedObject();
-                }*/
+            if (placeableObjectSO.CanBePlaced(ghost2D.transform.position))
+            {
+                ghost2D.gameObject.SetActive(false);
+                PlacedObject.CreatePlacedObject(ghost2D.transform.position, placeableObjectSO);
+                placeableObjectSO = null;
+            }
 
         }
 

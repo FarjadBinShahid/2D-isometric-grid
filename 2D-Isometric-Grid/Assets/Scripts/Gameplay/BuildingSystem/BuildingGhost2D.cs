@@ -16,13 +16,22 @@ namespace core.gameplay.buildingsystem
         private Vector3 prevPos;
 
         private Camera cam;
+        private Transform _transform;
+
+        private void Awake()
+        {
+            _transform = transform;
+            cam = Camera.main;
+        }
+
+        private void OnEnable()
+        {
+            RefreshVisual();
+        }
 
         private void Start()
         {
-            cam = Camera.main;
-            RefreshVisual();
             GridBuildingSystem.Instance.OnSelectedChanged += Instance_OnSelectedChanged;
-
         }
 
         private void Update()
@@ -32,6 +41,7 @@ namespace core.gameplay.buildingsystem
                 return;
             }
 
+            // move placeable object visual
             if (Input.GetMouseButton(0))
             {
                 if (EventSystem.current.IsPointerOverGameObject(0))
@@ -42,16 +52,17 @@ namespace core.gameplay.buildingsystem
                 touchPos.z = 0f;
                 if (prevPos != touchPos)
                 {
-                    transform.position = touchPos;//Vector3.Lerp(transform.position, touchPos, Time.deltaTime * 15f);
-                    prevPos = transform.position;
-                    GridBuildingSystem.Instance.FollowBuilding(transform.position);
+                    _transform.position = touchPos;//Vector3.Lerp(transform.position, touchPos, Time.deltaTime * 15f);
+                    prevPos = _transform.position;
+                    GridBuildingSystem.Instance.FollowBuilding(_transform.position);
                 }
             }
 
+            // snap the building visual to tile 
             if(Input.GetMouseButtonUp(0))
             {
-                Vector3Int cellPos = GridBuildingSystem.Instance.GridLayout.LocalToCell(transform.position);
-                transform.position = GridBuildingSystem.Instance.GridLayout.CellToLocalInterpolated(cellPos + new Vector3(0.5f, 0.5f, 0f));
+                Vector3Int cellPos = GridBuildingSystem.Instance.GridLayout.LocalToCell(_transform.position);
+                _transform.position = GridBuildingSystem.Instance.GridLayout.CellToLocalInterpolated(cellPos + new Vector3(0.5f, 0.5f, 0f));
             }
         }
 
@@ -73,16 +84,27 @@ namespace core.gameplay.buildingsystem
             // sets the position to middle of the screen
             Vector2 screenMidPos = new Vector2(Screen.width / 2, Screen.height / 2);
             Vector2 ghostInitPos = cam.ScreenToWorldPoint(screenMidPos);
-            transform.position = ghostInitPos;
+            _transform.position = ghostInitPos;
 
 
             if (placedObjectTypeSO != null)
             {
                 visual = Instantiate(placedObjectTypeSO.Visual, Vector3.zero, Quaternion.identity);
-                visual.parent = transform;
+                visual.parent = _transform;
                 visual.localPosition = Vector3.zero;
                 visual.localEulerAngles = Vector3.zero;
+
+                Vector3Int cellPos = GridBuildingSystem.Instance.GridLayout.LocalToCell(_transform.position);
+                _transform.position = GridBuildingSystem.Instance.GridLayout.CellToLocalInterpolated(cellPos + new Vector3(0.5f, 0.5f, 0f));
+                GridBuildingSystem.Instance.FollowBuilding(_transform.position);
             }
+        }
+
+
+        private void OnDisable()
+        {
+            Destroy(visual.gameObject);
+            visual = null;
         }
     }
 }

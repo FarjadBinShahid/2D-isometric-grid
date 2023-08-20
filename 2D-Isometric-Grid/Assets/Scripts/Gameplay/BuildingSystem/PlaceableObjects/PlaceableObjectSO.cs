@@ -1,3 +1,4 @@
+using core.gameplay.isometricgrid2d;
 using UnityEngine;
 
 namespace core.gameplay.buildingsystem.placeobjects
@@ -9,5 +10,17 @@ namespace core.gameplay.buildingsystem.placeobjects
         public Transform Prefab;
         public Transform Visual;
         public BoundsInt Area;
+
+
+        public bool CanBePlaced(Vector3 pos)
+        {
+            Vector3Int posInt = GridBuildingSystem.Instance.GridLayout.LocalToCell(pos);
+            BoundsInt areaTemp = Area;
+            areaTemp.position = posInt;
+            return GridBuildingSystem.Instance.CanTakeArea(areaTemp);
+        }
+
+
+
     }
 }
