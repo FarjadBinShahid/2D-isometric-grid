@@ -1,18 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class ErrorConstants : MonoBehaviour
+namespace core.constants
 {
-    // Start is called before the first frame update
-    void Start()
+    public class ErrorConstants
     {
-        
-    }
+        #region Error Messages
+        public const string CannotPlacebuildingError = "Cannot build here!";
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        #endregion
     }
 }

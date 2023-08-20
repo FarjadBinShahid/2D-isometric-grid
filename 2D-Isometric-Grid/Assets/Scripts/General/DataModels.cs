@@ -56,6 +56,22 @@ namespace core.general.datamodels
 
     }
 
+    public enum Direction
+    {
+        Down, 
+        Left, 
+        Up, 
+        Right
+    }
+    public enum TileType
+    {
+        Empty,
+        White,
+        Green,
+        Red
+    }
+
+
     #endregion
 
     #region MetaData
