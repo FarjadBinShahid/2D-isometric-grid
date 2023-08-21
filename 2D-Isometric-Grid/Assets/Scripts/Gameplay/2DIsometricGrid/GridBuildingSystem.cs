@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Linq;
 using System;
-using UnityEngine.EventSystems;
 using core.constants;
 using CodeMonkey.Utils;
 using core.gameplay.buildingsystem.placeobjects;
@@ -64,6 +63,7 @@ namespace core.gameplay.isometricgrid2d
 
         private void Update()
         {
+
             if (!placeableObjectSO)
             {
                 return;
@@ -75,9 +75,7 @@ namespace core.gameplay.isometricgrid2d
             }
             else if (Input.GetKeyDown(KeyCode.Escape))
             {
-                ClearArea();
-                ghost2D.gameObject.SetActive(false);
-                placeableObjectSO = null;
+                StopGhosting();
             }
         }
 
@@ -200,11 +198,29 @@ namespace core.gameplay.isometricgrid2d
             SetTilesBlock(area, TileType.Green, mainTilemap);
         }
 
+        public void StopGhosting()
+        {
+            ClearArea();
+            ghost2D.gameObject.SetActive(false);
+            placeableObjectSO = null;
+        }
+
+        public void FreeArea(BoundsInt area)
+        {
+            SetTilesBlock(area, TileType.White, mainTilemap);
+        }
+
+        public void DemolisPlaceObject(BoundsInt area)
+        {
+            StopGhosting();
+            FreeArea(area);
+        }
 
         public PlaceableObjectSO GetPlacedObjectTypeSO()
         {
             return placeableObjectSO;
         }
         #endregion
+
     }
 }

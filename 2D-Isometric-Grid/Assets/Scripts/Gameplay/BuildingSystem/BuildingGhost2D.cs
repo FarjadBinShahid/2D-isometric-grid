@@ -1,8 +1,5 @@
 using core.gameplay.buildingsystem.placeobjects;
 using core.gameplay.isometricgrid2d;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 

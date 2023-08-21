@@ -11,6 +11,11 @@ namespace core.constants
             " bq", " br", " bs", " bt", " bu", " bv", " bw", " bx", " by", " bz", };
         #endregion
 
+        #region Tags
+
+        public const string PlacedObjectTag = "Placed Object";
+
+        #endregion
 
         #region paths
 
