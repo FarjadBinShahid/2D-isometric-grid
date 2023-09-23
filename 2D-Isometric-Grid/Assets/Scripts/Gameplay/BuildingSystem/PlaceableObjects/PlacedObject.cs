@@ -45,7 +45,8 @@ namespace core.gameplay.buildingsystem.placeobjects
 
         private void OnMouseDown()
         {
-            DemolisPlacedObject();
+            if(!GridBuildingSystem.Instance.IsInBuildingMode)
+                DemolisPlacedObject();
         }
 
         public void DemolisPlacedObject()

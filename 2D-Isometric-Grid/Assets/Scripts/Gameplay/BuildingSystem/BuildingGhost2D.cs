@@ -7,8 +7,8 @@ namespace core.gameplay.buildingsystem
 {
     public class BuildingGhost2D : MonoBehaviour
     {
+        [Tooltip("Visual of a placeable object to ghost")]
         private Transform visual;
-        private PlaceableObjectSO placeableObjectSO;
 
         private Vector3 prevPos;
 
@@ -59,7 +59,7 @@ namespace core.gameplay.buildingsystem
             if(Input.GetMouseButtonUp(0))
             {
                 Vector3Int cellPos = GridBuildingSystem.Instance.GridLayout.LocalToCell(_transform.position);
-                _transform.position = GridBuildingSystem.Instance.GridLayout.CellToLocalInterpolated(cellPos + new Vector3(0.5f, 0.5f, 0f));
+                _transform.position = GridBuildingSystem.Instance.GridLayout.CellToLocalInterpolated(cellPos /*+ new Vector3(0.5f, 0.5f, 0f)*/);
             }
         }
 
@@ -92,7 +92,7 @@ namespace core.gameplay.buildingsystem
                 visual.localEulerAngles = Vector3.zero;
 
                 Vector3Int cellPos = GridBuildingSystem.Instance.GridLayout.LocalToCell(_transform.position);
-                _transform.position = GridBuildingSystem.Instance.GridLayout.CellToLocalInterpolated(cellPos + new Vector3(0.5f, 0.5f, 0f));
+                _transform.position = GridBuildingSystem.Instance.GridLayout.CellToLocalInterpolated(cellPos /*+ new Vector3(0.5f, 0.5f, 0f)*/);
                 GridBuildingSystem.Instance.FollowBuilding(_transform.position);
             }
         }

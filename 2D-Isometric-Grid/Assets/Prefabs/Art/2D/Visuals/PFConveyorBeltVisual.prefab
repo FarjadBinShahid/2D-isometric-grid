@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6059895606033250885}
   m_Layer: 0
-  m_Name: HouseVisual
-  m_TagString: Untagged
+  m_Name: PFConveyorBeltVisual
+  m_TagString: Placed Object
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -105,12 +105,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 922042017, guid: c99ab0c77566ca048b37c3f5c4db10cb, type: 3}
+  m_Sprite: {fileID: -307744117, guid: 0450fd550a1b28e4780cf5587f027a1b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 7.96, y: 7.22}
+  m_Size: {x: 1.724, y: 1.992}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

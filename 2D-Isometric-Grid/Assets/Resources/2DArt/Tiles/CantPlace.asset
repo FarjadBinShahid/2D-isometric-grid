@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: Red
+  m_Name: CantPlace
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: d6541126d7d0ffb4299e4849d5e83e13, type: 3}
+  m_Sprite: {fileID: -1027335501, guid: d6541126d7d0ffb4299e4849d5e83e13, type: 3}
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_Transform:
     e00: 1

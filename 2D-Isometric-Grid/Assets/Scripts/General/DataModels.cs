@@ -68,7 +68,17 @@ namespace core.general.datamodels
         Empty,
         White,
         Green,
-        Red
+        Red,
+        Placeable,
+        Placed,
+        CantPlace
+    }
+
+    public enum PlaceableObjectsType
+    {
+        Building,
+        Conveyor
+        
     }
 
 

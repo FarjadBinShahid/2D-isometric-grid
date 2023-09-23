@@ -9,6 +9,7 @@ using core.constants;
 using CodeMonkey.Utils;
 using core.gameplay.buildingsystem.placeobjects;
 using core.gameplay.buildingsystem;
+using UnityEngine.EventSystems;
 
 namespace core.gameplay.isometricgrid2d
 {
@@ -30,6 +31,8 @@ namespace core.gameplay.isometricgrid2d
         [Tooltip("BuildingGhost2D script reference")]
         [SerializeField ]private BuildingGhost2D ghost2D;
 
+
+        public bool IsInBuildingMode { get; private set; }
 
 
         public static Dictionary<TileType, TileBase> tileBases = new Dictionary<TileType, TileBase>();
@@ -64,19 +67,58 @@ namespace core.gameplay.isometricgrid2d
         private void Update()
         {
 
+            if(Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                placeableObjectSO = placeableObjectSOList[0];
+                OnSelectedChanged?.Invoke();
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                placeableObjectSO = placeableObjectSOList[1];
+                OnSelectedChanged?.Invoke();
+            }
+
+
+
             if (!placeableObjectSO)
             {
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (placeableObjectSO.placeableObjectType == PlaceableObjectsType.Building)
             {
-                BuildPlaceableObject();
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    BuildPlaceableObject(ghost2D.transform.position);
+                }
+                else if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    IsInBuildingMode = false;
+                    StopGhosting();
+                }
             }
-            else if (Input.GetKeyDown(KeyCode.Escape))
+            else
             {
-                StopGhosting();
+                if (Input.GetMouseButton(0))
+                {
+                    if (EventSystem.current.IsPointerOverGameObject(0))
+                    {
+                        return;
+                    }
+                    Vector3 touchPos = cam.ScreenToWorldPoint(Input.mousePosition);
+                    touchPos.z = 0f;
+                    Vector3Int cellPos = GridLayout.LocalToCell(touchPos);
+                    touchPos = GridBuildingSystem.Instance.GridLayout.CellToLocalInterpolated(cellPos /*+ new Vector3(0.5f, 0.5f, 0f)*/);
+                    if (prevPos != touchPos)
+                    {
+                        //FollowBuilding(prevPos);
+                        BuildPlaceableObject(touchPos);
+                        prevPos = touchPos;
+                    }
+                }
             }
+
         }
 
         #endregion
@@ -120,6 +162,7 @@ namespace core.gameplay.isometricgrid2d
 
         public void InitWithBuilding(GameObject building)
         {
+            IsInBuildingMode = true;
             placeableObjectSO = placeableObjectSOList[0];
             ghost2D.gameObject.SetActive(true);
             //OnSelectedChanged?.Invoke();
@@ -151,13 +194,13 @@ namespace core.gameplay.isometricgrid2d
 
             for (int i = 0; i < baseArray.Length; i++)
             {
-                if (baseArray[i] == tileBases[TileType.White])
+                if (baseArray[i] == tileBases[TileType.Placeable])
                 {
-                    tileArray[i] = tileBases[TileType.Green];
+                    tileArray[i] = tileBases[TileType.Placed];
                 }
                 else
                 {
-                    FillTiles(tileArray, TileType.Red);
+                    FillTiles(tileArray, TileType.CantPlace);
                     break;
                 }
             }
@@ -166,13 +209,16 @@ namespace core.gameplay.isometricgrid2d
             prevArea = buildingArea;
         }
 
-        private void BuildPlaceableObject()
+        private void BuildPlaceableObject(Vector3 pos)
         {
-            if (placeableObjectSO.CanBePlaced(ghost2D.transform.position))
+            if (placeableObjectSO.CanBePlaced(pos))
             {
                 ghost2D.gameObject.SetActive(false);
-                PlacedObject.CreatePlacedObject(ghost2D.transform.position, placeableObjectSO);
-                placeableObjectSO = null;
+                PlacedObject.CreatePlacedObject(pos, placeableObjectSO);
+                if(placeableObjectSO.placeableObjectType == PlaceableObjectsType.Building)
+                {
+                    placeableObjectSO = null;
+                }
             }
 
         }
@@ -182,7 +228,7 @@ namespace core.gameplay.isometricgrid2d
             TileBase[] baseArray = GetTileBlock(area, mainTilemap);
             foreach (var tilemap in baseArray)
             {
-                if (tilemap != tileBases[TileType.White])
+                if (tilemap != tileBases[TileType.Placeable])
                 {
                     UtilsClass.CreateWorldTextPopup(ErrorConstants.CannotPlacebuildingError, area.position, 15);
                     return false;
@@ -195,7 +241,7 @@ namespace core.gameplay.isometricgrid2d
         public void TakeArea(BoundsInt area)
         {
             SetTilesBlock(area, TileType.Empty, tempTilemap);
-            SetTilesBlock(area, TileType.Green, mainTilemap);
+            SetTilesBlock(area, TileType.Placed, mainTilemap);
         }
 
         public void StopGhosting()
@@ -207,7 +253,7 @@ namespace core.gameplay.isometricgrid2d
 
         public void FreeArea(BoundsInt area)
         {
-            SetTilesBlock(area, TileType.White, mainTilemap);
+            SetTilesBlock(area, TileType.Placeable, mainTilemap);
         }
 
         public void DemolisPlaceObject(BoundsInt area)
